@@ -1,0 +1,557 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{background:#1a1d23;color:#e8eaf0;font-family:var(--font-sans);font-size:14px;border-radius:16px;padding:0 0 2rem;}
+.topbar{background:#141720;border-bottom:1px solid #2a2f3d;padding:14px 20px;display:flex;align-items:center;gap:12px;border-radius:16px 16px 0 0;}
+.topbar-icon{width:32px;height:32px;border-radius:8px;background:#00c9a7;display:flex;align-items:center;justify-content:center;}
+.topbar-icon svg{width:18px;height:18px;fill:#0a1a15;}
+.topbar-title{font-size:16px;font-weight:500;color:#e8eaf0;}
+.topbar-sub{font-size:12px;color:#6b7280;margin-top:1px;}
+.nav{display:flex;gap:0;background:#141720;border-bottom:1px solid #2a2f3d;padding:0 16px;overflow-x:auto;}
+.nb{padding:12px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#6b7280;border-bottom:2px solid transparent;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;transition:all 0.15s;}
+.nb:hover{color:#e8eaf0;}
+.nb.act{color:#00c9a7;border-bottom-color:#00c9a7;}
+.body{padding:16px;}
+.sec{display:none;}
+.sec.act{display:block;}
+.card{background:#21262f;border:1px solid #2a2f3d;border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+.card-title{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#6b7280;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.ct-dot{width:6px;height:6px;border-radius:50%;}
+.ct-cyan{background:#00c9a7;}
+.ct-orange{background:#f97316;}
+.ct-blue{background:#378ADD;}
+.ct-purple{background:#7F77DD;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.fg4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:11px;color:#6b7280;letter-spacing:0.03em;}
+.field input,.field select{background:#161a22;border:1px solid #2a2f3d;border-radius:8px;padding:8px 10px;font-size:13px;color:#e8eaf0;font-family:var(--font-sans);width:100%;transition:border-color 0.15s;}
+.field input:focus{outline:none;border-color:#00c9a7;}
+.field input::placeholder{color:#3d4555;}
+.field select option{background:#21262f;}
+.calc-panel{background:#141720;border:1px solid #00c9a760;border-radius:10px;padding:12px 14px;margin-top:10px;display:none;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.calc-item .cv{font-size:20px;font-weight:500;color:#00c9a7;}
+.calc-item .cl{font-size:11px;color:#6b7280;margin-top:2px;}
+.imc-bar{display:flex;border-radius:99px;overflow:hidden;height:8px;margin:10px 0 4px;}
+.imc-seg{flex:1;}
+.imc-marker{position:relative;height:4px;}
+.imc-ptr{width:2px;height:10px;background:#fff;border-radius:1px;position:absolute;top:-3px;transition:left 0.4s;}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500;}
+.bcyan{background:#00c9a720;color:#00c9a7;border:1px solid #00c9a740;}
+.borange{background:#f9731620;color:#f97316;border:1px solid #f9731640;}
+.bred{background:#E24B4a20;color:#F09595;border:1px solid #E24B4a40;}
+.bamber{background:#EF9F2720;color:#EF9F27;border:1px solid #EF9F2740;}
+.bgray{background:#2a2f3d;color:#6b7280;}
+.btn-main{width:100%;padding:11px;background:#f97316;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;margin-top:10px;letter-spacing:0.02em;transition:opacity 0.15s;}
+.btn-main:hover{opacity:0.88;}
+.btn-cyan{width:100%;padding:11px;background:#00c9a7;color:#0a1a15;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;margin-top:10px;transition:opacity 0.15s;}
+.btn-cyan:hover{opacity:0.88;}
+.btn-ghost{padding:4px 10px;background:transparent;border:1px solid #2a2f3d;border-radius:6px;font-size:11px;color:#6b7280;cursor:pointer;}
+.btn-ghost:hover{border-color:#E24B4a;color:#F09595;}
+.save-ok{text-align:center;font-size:13px;color:#00c9a7;margin-top:8px;display:none;}
+.met-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.met{background:#141720;border-radius:10px;padding:10px 12px;border:1px solid #2a2f3d;}
+.met .ml{font-size:10px;color:#6b7280;margin-bottom:3px;}
+.met .mv{font-size:18px;font-weight:500;}
+.met .md{font-size:11px;margin-top:2px;}
+.dpos{color:#00c9a7;} .dneg{color:#f97316;} .dneu{color:#3d4555;}
+.hist-item{padding:12px 0;border-bottom:1px solid #2a2f3d;}
+.hist-item:last-child{border-bottom:none;}
+.hrow{display:flex;justify-content:space-between;align-items:flex-start;}
+.hstats{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;}
+.hs{font-size:13px;color:#e8eaf0;} .hs span{font-size:11px;color:#6b7280;display:block;}
+.tag-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.tag{font-size:11px;padding:4px 10px;border-radius:99px;background:#21262f;color:#6b7280;cursor:pointer;border:1px solid #2a2f3d;transition:all 0.15s;}
+.tag.sel{background:#00c9a720;color:#00c9a7;border-color:#00c9a740;}
+.chart-wrap{position:relative;width:100%;height:210px;}
+.comp-row{display:grid;grid-template-columns:120px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px;}
+.comp-lbl{font-size:11px;color:#6b7280;}
+.bw{height:8px;background:#141720;border-radius:99px;overflow:hidden;}
+.bar{height:100%;border-radius:99px;}
+.pl{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-top:2px;}
+.evo-card{display:flex;gap:10px;align-items:center;padding:10px 12px;background:#141720;border-radius:10px;margin-bottom:7px;border:1px solid #2a2f3d;}
+.ei{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.epos{background:#00c9a720;} .eneg{background:#f9731620;} .eneu{background:#2a2f3d;}
+.etitle{font-size:13px;font-weight:500;color:#e8eaf0;}
+.esub{font-size:11px;color:#6b7280;margin-top:2px;}
+.empty{text-align:center;padding:2rem;color:#3d4555;font-size:13px;}
+.sep{height:1px;background:#2a2f3d;margin:10px 0;}
+.imc-calc-result{text-align:center;padding:18px 12px;background:#141720;border-radius:10px;margin-top:10px;border:1px solid #00c9a740;}
+.imc-big{font-size:48px;font-weight:500;color:#00c9a7;line-height:1;}
+.imc-cat{font-size:15px;margin-top:6px;}
+.imc-ranges{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;}
+.imc-range{padding:8px 6px;border-radius:8px;text-align:center;font-size:11px;}
+.range-act{border:1px solid #00c9a7;}
+.range-inact{background:#21262f;border:1px solid #2a2f3d;color:#6b7280;}
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm0-4h-2V7h2v8z"/></svg>
+    </div>
+    <div>
+      <div class="topbar-title">Avaliação física</div>
+      <div class="topbar-sub">Histórico · Comparativo · Evolução</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="nb act" onclick="goTab('form',this)">Nova avaliação</button>
+    <button class="nb" onclick="goTab('imc',this)">Calculadora IMC</button>
+    <button class="nb" onclick="goTab('hist',this)">Histórico</button>
+    <button class="nb" onclick="goTab('comp',this)">Comparativo</button>
+    <button class="nb" onclick="goTab('evo',this)">Evolução</button>
+  </nav>
+
+  <div class="body">
+
+    <!-- IMC CALC -->
+    <div id="tab-imc" class="sec">
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-cyan"></span>Calculadora de IMC</div>
+        <div class="fg3">
+          <div class="field"><label>Peso (kg)</label><input type="number" id="ci-peso" placeholder="84.6" step="0.1" oninput="calcIMCTool()"></div>
+          <div class="field"><label>Altura (m)</label><input type="number" id="ci-alt" placeholder="1.80" step="0.01" oninput="calcIMCTool()"></div>
+          <div class="field"><label>Sexo</label>
+            <select id="ci-sexo" onchange="calcIMCTool()">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+          <div class="field"><label>Cintura (cm) — opcional</label><input type="number" id="ci-cin" placeholder="90.5" step="0.5" oninput="calcIMCTool()"></div>
+          <div class="field"><label>Quadril (cm) — opcional</label><input type="number" id="ci-quad" placeholder="99.5" step="0.5" oninput="calcIMCTool()"></div>
+          <div class="field"><label>Idade</label><input type="number" id="ci-idade" placeholder="30" oninput="calcIMCTool()"></div>
+        </div>
+        <div class="imc-calc-result" id="imc-result" style="display:none">
+          <div class="imc-big" id="imc-val">—</div>
+          <div class="imc-cat" id="imc-cat-lbl">—</div>
+          <div class="imc-bar" style="margin:14px 0 0;" id="imc-bar-seg"></div>
+          <div style="position:relative;height:12px;" id="imc-ptr-wrap"></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#3d4555;margin-bottom:12px;padding:0 2px;">
+            <span>16</span><span>18.5</span><span>25</span><span>30</span><span>35</span><span>40</span>
+          </div>
+          <div class="imc-ranges" id="imc-ranges"></div>
+          <div id="rcq-result" style="margin-top:12px;display:none;background:#21262f;border-radius:8px;padding:10px;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-orange"></span>Tabela de referência IMC</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          ${[['Abaixo do peso','< 18.5','bamber'],['Normal','18.5 – 24.99','bcyan'],['Sobrepeso','25 – 29.99','borange'],['Obesidade I','30 – 34.99','bred'],['Obesidade II','35 – 39.99','bred'],['Obesidade III','≥ 40','bred']].map(([c,r,b])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#141720;border-radius:8px;border:1px solid #2a2f3d;"><span style="font-size:12px;color:#e8eaf0">${c}</span><span class="badge ${b}">${r}</span></div>`).join('')}
+        </div>
+        <div class="sep"></div>
+        <div class="card-title" style="margin-top:4px;"><span class="ct-dot ct-purple"></span>RCQ — Relação cintura-quadril</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="padding:8px 10px;background:#141720;border-radius:8px;border:1px solid #2a2f3d;font-size:12px;"><span style="color:#6b7280">Homem baixo risco</span><span style="float:right;color:#00c9a7">< 0.90</span></div>
+          <div style="padding:8px 10px;background:#141720;border-radius:8px;border:1px solid #2a2f3d;font-size:12px;"><span style="color:#6b7280">Mulher baixo risco</span><span style="float:right;color:#00c9a7">< 0.80</span></div>
+          <div style="padding:8px 10px;background:#141720;border-radius:8px;border:1px solid #2a2f3d;font-size:12px;"><span style="color:#6b7280">Homem risco alto</span><span style="float:right;color:#f97316">> 0.95</span></div>
+          <div style="padding:8px 10px;background:#141720;border-radius:8px;border:1px solid #2a2f3d;font-size:12px;"><span style="color:#6b7280">Mulher risco alto</span><span style="float:right;color:#f97316">> 0.85</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div id="tab-form" class="sec act">
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-cyan"></span>Identificação</div>
+        <div class="fg3">
+          <div class="field"><label>Nome</label><input id="f-nome" placeholder="João Silva"></div>
+          <div class="field"><label>Data</label><input type="date" id="f-data"></div>
+          <div class="field"><label>Avaliador</label><input id="f-aval" placeholder="Eugenia"></div>
+          <div class="field"><label>Idade</label><input type="number" id="f-idade" placeholder="30"></div>
+          <div class="field"><label>Sexo</label><select id="f-sexo"><option value="">—</option><option value="M">Masculino</option><option value="F">Feminino</option></select></div>
+          <div class="field"><label>Objetivo / obs.</label><input id="f-obs" placeholder="Hipertrofia, emagrecimento..."></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-cyan"></span>Composição corporal</div>
+        <div class="fg3">
+          <div class="field"><label>Peso (kg)</label><input type="number" id="f-peso" step="0.1" placeholder="84.6" oninput="calcAuto()"></div>
+          <div class="field"><label>Altura (m)</label><input type="number" id="f-alt" step="0.01" placeholder="1.80" oninput="calcAuto()"></div>
+          <div class="field"><label>Massa magra (kg)</label><input type="number" id="f-magra" step="0.01" placeholder="70.93"></div>
+          <div class="field"><label>Massa gorda (kg)</label><input type="number" id="f-mgorda" step="0.01" placeholder="13.67"></div>
+          <div class="field"><label>Gordura total %</label><input type="number" id="f-gord" step="0.01" placeholder="16.16" oninput="calcAuto()"></div>
+          <div class="field"><label>Gordura ideal %</label><input type="number" id="f-gideal" step="0.01" placeholder="15"></div>
+        </div>
+        <div class="calc-panel" id="calc-panel">
+          <div class="calc-grid">
+            <div class="calc-item"><div class="cv" id="c-imc">—</div><div class="cl">IMC</div></div>
+            <div class="calc-item"><div class="cv" id="c-imc-cat" style="font-size:13px">—</div><div class="cl">Classe IMC</div></div>
+            <div class="calc-item"><div class="cv" id="c-rcq">—</div><div class="cl">RCQ</div></div>
+            <div class="calc-item"><div class="cv" id="c-rcq-cat" style="font-size:13px">—</div><div class="cl">Risco CV</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-orange"></span>Dobras cutâneas (mm)</div>
+        <div class="fg4">
+          <div class="field"><label>Subescapular</label><input type="number" id="d-sub" placeholder="26" step="0.5"></div>
+          <div class="field"><label>Triciptal</label><input type="number" id="d-tri" placeholder="16" step="0.5"></div>
+          <div class="field"><label>Axilar média</label><input type="number" id="d-axi" placeholder="10" step="0.5"></div>
+          <div class="field"><label>Supra-ilíaca</label><input type="number" id="d-sup" placeholder="23" step="0.5"></div>
+          <div class="field"><label>Peitoral</label><input type="number" id="d-pei" placeholder="5" step="0.5"></div>
+          <div class="field"><label>Abdominal</label><input type="number" id="d-abd" placeholder="35" step="0.5"></div>
+          <div class="field"><label>Coxa direita</label><input type="number" id="d-cxd" placeholder="20" step="0.5"></div>
+          <div class="field"><label>Biciptal</label><input type="number" id="d-bic" placeholder="12" step="0.5"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-blue"></span>Perimetria (cm)</div>
+        <div class="fg3">
+          <div class="field"><label>Pescoço</label><input type="number" id="p-pes" step="0.5" placeholder="42.5"></div>
+          <div class="field"><label>Ombro</label><input type="number" id="p-omb" step="0.5" placeholder="119.5"></div>
+          <div class="field"><label>Peito relaxado</label><input type="number" id="p-ptr" step="0.5" placeholder="97"></div>
+          <div class="field"><label>Peito inspirado</label><input type="number" id="p-pti" step="0.5" placeholder="100.5"></div>
+          <div class="field"><label>Braço dir. relaxado</label><input type="number" id="p-bdr" step="0.5" placeholder="31" oninput="calcAuto()"></div>
+          <div class="field"><label>Braço dir. contraído</label><input type="number" id="p-bdc" step="0.5" placeholder="35"></div>
+          <div class="field"><label>Braço esq. relaxado</label><input type="number" id="p-ber" step="0.5" placeholder="30"></div>
+          <div class="field"><label>Braço esq. contraído</label><input type="number" id="p-bec" step="0.5" placeholder="34"></div>
+          <div class="field"><label>Antebraço dir.</label><input type="number" id="p-afd" step="0.5" placeholder="29"></div>
+          <div class="field"><label>Antebraço esq.</label><input type="number" id="p-afe" step="0.5" placeholder="28"></div>
+          <div class="field"><label>Cintura</label><input type="number" id="p-cin" step="0.5" placeholder="90.5" oninput="calcAuto()"></div>
+          <div class="field"><label>Abdômen</label><input type="number" id="p-abd" step="0.5" placeholder="87"></div>
+          <div class="field"><label>Quadril</label><input type="number" id="p-qua" step="0.5" placeholder="99.5" oninput="calcAuto()"></div>
+          <div class="field"><label>Coxa dir.</label><input type="number" id="p-cxd" step="0.5" placeholder="58"></div>
+          <div class="field"><label>Coxa esq.</label><input type="number" id="p-cxe" step="0.5" placeholder="59"></div>
+          <div class="field"><label>Panturrilha dir.</label><input type="number" id="p-pad" step="0.5" placeholder="39"></div>
+          <div class="field"><label>Panturrilha esq.</label><input type="number" id="p-pae" step="0.5" placeholder="38"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-purple"></span>Dieta e hábitos</div>
+        <div class="fg4">
+          <div class="field"><label>Qualidade da dieta</label><select id="f-dieta"><option value="">—</option><option value="1">Ruim</option><option value="2">Regular</option><option value="3">Boa</option><option value="4">Muito boa</option><option value="5">Excelente</option></select></div>
+          <div class="field"><label>Calorias (kcal/dia)</label><input type="number" id="f-kcal" placeholder="2000"></div>
+          <div class="field"><label>Proteína (g/dia)</label><input type="number" id="f-prot" placeholder="130"></div>
+          <div class="field"><label>Treinos / semana</label><input type="number" id="f-trn" placeholder="4" min="0" max="14"></div>
+        </div>
+      </div>
+      <button class="btn-main" onclick="salvar()">Salvar avaliação</button>
+      <div class="save-ok" id="save-ok">Avaliação salva com sucesso!</div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="tab-hist" class="sec">
+      <div class="card"><div class="card-title"><span class="ct-dot ct-cyan"></span>Avaliações registradas</div><div id="hist-list"></div></div>
+    </div>
+
+    <!-- COMPARATIVO -->
+    <div id="tab-comp" class="sec">
+      <div class="card">
+        <div class="card-title"><span class="ct-dot ct-orange"></span>Selecione duas avaliações</div>
+        <div class="fg2" style="margin-bottom:10px">
+          <div class="field"><label>Base (anterior)</label><select id="ca" style="background:#161a22;border:1px solid #2a2f3d;border-radius:8px;padding:8px;color:#e8eaf0;width:100%;font-family:var(--font-sans);font-size:13px;"></select></div>
+          <div class="field"><label>Recente</label><select id="cb" style="background:#161a22;border:1px solid #2a2f3d;border-radius:8px;padding:8px;color:#e8eaf0;width:100%;font-family:var(--font-sans);font-size:13px;"></select></div>
+        </div>
+        <button class="btn-cyan" onclick="renderComp()">Comparar evolução</button>
+      </div>
+      <div id="comp-result"></div>
+    </div>
+
+    <!-- EVOLUÇÃO -->
+    <div id="tab-evo" class="sec">
+      <div class="card"><div class="card-title"><span class="ct-dot ct-cyan"></span>Métrica</div><div class="tag-row" id="evo-tags"></div></div>
+      <div class="card"><div class="chart-wrap"><canvas id="evo-chart" role="img" aria-label="Gráfico de evolução da métrica selecionada ao longo do tempo">Dados de evolução ao longo do tempo.</canvas></div></div>
+      <div class="card"><div class="card-title"><span class="ct-dot ct-orange"></span>Análise automática</div><div id="evo-anal"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let db=[], chartInst=null, selMet='peso';
+
+const METRICS=[
+  {key:'peso',label:'Peso (kg)',color:'#378ADD'},
+  {key:'gordura',label:'% Gordura',color:'#E24B4A'},
+  {key:'magra',label:'Massa magra (kg)',color:'#00c9a7'},
+  {key:'imc',label:'IMC',color:'#EF9F27'},
+  {key:'p-cin',label:'Cintura (cm)',color:'#f97316'},
+  {key:'p-abd',label:'Abdômen (cm)',color:'#7F77DD'},
+  {key:'p-qua',label:'Quadril (cm)',color:'#D4537E'},
+  {key:'p-cxd',label:'Coxa dir. (cm)',color:'#378ADD'},
+  {key:'p-bdr',label:'Braço dir. (cm)',color:'#00c9a7'},
+  {key:'d-abd',label:'Dobra abdominal (mm)',color:'#EF9F27'},
+];
+
+const DIETALBL=['','Ruim','Regular','Boa','Muito boa','Excelente'];
+
+function goTab(tab,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('act'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('act'));
+  document.getElementById('tab-'+tab).classList.add('act');
+  btn.classList.add('act');
+  if(tab==='hist') renderHist();
+  if(tab==='comp') renderCompSel();
+  if(tab==='evo') renderEvo();
+}
+
+function g(id){return document.getElementById(id);}
+function gv(id){const v=parseFloat(g(id).value);return isNaN(v)?null:v;}
+function gs(id){return g(id).value||null;}
+function fmtD(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}
+
+function calcIMCv(p,h){return(p&&h)?+(p/h/h).toFixed(2):null;}
+function catIMCv(v){
+  if(!v)return'—';
+  if(v<16)return'Magreza grave';
+  if(v<18.5)return'Abaixo do peso';
+  if(v<25)return'Peso normal';
+  if(v<30)return'Sobrepeso';
+  if(v<35)return'Obesidade I';
+  if(v<40)return'Obesidade II';
+  return'Obesidade III';
+}
+function badgeIMCv(v){
+  if(!v)return'bgray';
+  if(v<18.5)return'bamber';
+  if(v<25)return'bcyan';
+  if(v<30)return'borange';
+  return'bred';
+}
+function calcRCQv(c,q){return(c&&q)?+(c/q).toFixed(2):null;}
+function catRCQv(v,s){
+  if(!v)return'—';
+  if(s==='F'){if(v<0.80)return'Baixo';if(v<0.85)return'Moderado';if(v<0.90)return'Alto';return'Muito alto';}
+  if(v<0.85)return'Baixo';if(v<0.90)return'Moderado';if(v<0.95)return'Alto';return'Muito alto';
+}
+
+function calcAuto(){
+  const peso=gv('f-peso'),alt=gv('f-alt'),cin=gv('p-cin'),qua=gv('p-qua');
+  const sexo=gs('f-sexo')||'M';
+  const imc=calcIMCv(peso,alt);
+  const rcq=calcRCQv(cin,qua);
+  if(imc||rcq){
+    g('calc-panel').style.display='block';
+    g('c-imc').textContent=imc||'—';
+    g('c-imc-cat').textContent=catIMCv(imc);
+    g('c-rcq').textContent=rcq||'—';
+    g('c-rcq-cat').textContent=catRCQv(rcq,sexo);
+  }
+}
+
+function calcIMCTool(){
+  const peso=gv('ci-peso'),alt=gv('ci-alt'),cin=gv('ci-cin'),quad=gv('ci-quad');
+  const sexo=g('ci-sexo').value;
+  const imc=calcIMCv(peso,alt);
+  if(!imc){g('imc-result').style.display='none';return;}
+  g('imc-result').style.display='block';
+  g('imc-val').textContent=imc.toFixed(2);
+  const cat=catIMCv(imc);
+  const bClass=badgeIMCv(imc);
+  const catColor=bClass==='bcyan'?'#00c9a7':bClass==='bamber'?'#EF9F27':'#f97316';
+  g('imc-cat-lbl').innerHTML=`<span class="badge ${bClass}">${cat}</span>`;
+
+  const segs=[
+    {max:18.5,color:'#EF9F27',label:'Abaixo'},
+    {max:25,color:'#00c9a7',label:'Normal'},
+    {max:30,color:'#EF9F27',label:'Sobrepeso'},
+    {max:35,color:'#f97316',label:'Ob. I'},
+    {max:40,color:'#E24B4A',label:'Ob. II'},
+    {max:50,color:'#A32D2D',label:'Ob. III'},
+  ];
+  const minV=16,maxV=50,range=maxV-minV;
+  g('imc-bar-seg').innerHTML=segs.map((s,i)=>{
+    const prev=i===0?minV:segs[i-1].max;
+    const w=((s.max-prev)/range*100).toFixed(1);
+    return`<div class="imc-seg" style="background:${s.color};flex:${w}"></div>`;
+  }).join('');
+
+  const pct=Math.min(Math.max((imc-minV)/range,0),1)*100;
+  g('imc-ptr-wrap').innerHTML=`<div class="imc-ptr" style="left:calc(${pct.toFixed(1)}% - 1px)"></div>`;
+
+  const ranges=[
+    {lbl:'Abaixo do peso',range:'< 18.5',active:imc<18.5,color:'#EF9F27'},
+    {lbl:'Peso normal',range:'18.5–24.99',active:imc>=18.5&&imc<25,color:'#00c9a7'},
+    {lbl:'Sobrepeso',range:'25–29.99',active:imc>=25&&imc<30,color:'#EF9F27'},
+    {lbl:'Obesidade I',range:'30–34.99',active:imc>=30&&imc<35,color:'#f97316'},
+    {lbl:'Obesidade II',range:'35–39.99',active:imc>=35&&imc<40,color:'#E24B4A'},
+    {lbl:'Obesidade III',range:'≥ 40',active:imc>=40,color:'#A32D2D'},
+  ];
+  g('imc-ranges').innerHTML=ranges.map(r=>`
+    <div class="${r.active?'imc-range range-act':'imc-range range-inact'}" style="${r.active?`background:${r.color}20;border-color:${r.color};`:''}">
+      <div style="font-size:11px;font-weight:${r.active?'500':'400'};color:${r.active?r.color:'#6b7280'}">${r.lbl}</div>
+      <div style="font-size:10px;color:${r.active?r.color:'#3d4555'};margin-top:2px">${r.range}</div>
+    </div>`).join('');
+
+  const rcq=calcRCQv(cin,quad);
+  const rcqEl=g('rcq-result');
+  if(rcq){
+    const cat=catRCQv(rcq,sexo);
+    const rcqColor=cat==='Baixo'?'#00c9a7':cat==='Moderado'?'#EF9F27':'#f97316';
+    rcqEl.style.display='block';
+    rcqEl.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:11px;color:#6b7280">Relação cintura-quadril (RCQ)</div><div style="font-size:22px;font-weight:500;color:${rcqColor};margin-top:2px">${rcq}</div></div>
+      <div><span class="badge" style="background:${rcqColor}20;color:${rcqColor};border:1px solid ${rcqColor}40">${cat} risco</span></div>
+    </div>`;
+  } else { rcqEl.style.display='none'; }
+}
+
+function salvar(){
+  if(!gs('f-data')||!gv('f-peso')){alert('Preencha ao menos a data e o peso.');return;}
+  const peso=gv('f-peso'),alt=gv('f-alt'),cin=gv('p-cin'),qua=gv('p-qua');
+  const sexo=gs('f-sexo')||'M';
+  const rec={
+    id:Date.now(),nome:gs('f-nome')||'Avaliação',data:gs('f-data'),aval:gs('f-aval'),
+    idade:gv('f-idade'),sexo,obs:gs('f-obs'),
+    peso,altura:alt,magra:gv('f-magra'),mgorda:gv('f-mgorda'),
+    gordura:gv('f-gord'),gideal:gv('f-gideal'),
+    imc:calcIMCv(peso,alt),rcq:calcRCQv(cin,qua),
+    'd-sub':gv('d-sub'),'d-tri':gv('d-tri'),'d-axi':gv('d-axi'),'d-sup':gv('d-sup'),
+    'd-pei':gv('d-pei'),'d-abd':gv('d-abd'),'d-cxd':gv('d-cxd'),'d-bic':gv('d-bic'),
+    'p-pes':gv('p-pes'),'p-omb':gv('p-omb'),'p-ptr':gv('p-ptr'),'p-pti':gv('p-pti'),
+    'p-bdr':gv('p-bdr'),'p-bdc':gv('p-bdc'),'p-ber':gv('p-ber'),'p-bec':gv('p-bec'),
+    'p-afd':gv('p-afd'),'p-afe':gv('p-afe'),'p-cin':cin,'p-abd':gv('p-abd'),
+    'p-qua':qua,'p-cxd':gv('p-cxd'),'p-cxe':gv('p-cxe'),'p-pad':gv('p-pad'),'p-pae':gv('p-pae'),
+    dieta:gv('f-dieta'),kcal:gv('f-kcal'),prot:gv('f-prot'),treinos:gv('f-trn'),
+  };
+  db.push(rec);db.sort((a,b)=>a.data.localeCompare(b.data));saveDB();
+  ['f-nome','f-aval','f-obs','f-idade','f-peso','f-alt','f-magra','f-mgorda','f-gord','f-gideal',
+   'd-sub','d-tri','d-axi','d-sup','d-pei','d-abd','d-cxd','d-bic',
+   'p-pes','p-omb','p-ptr','p-pti','p-bdr','p-bdc','p-ber','p-bec','p-afd','p-afe',
+   'p-cin','p-abd','p-qua','p-cxd','p-cxe','p-pad','p-pae','f-kcal','f-prot','f-trn'
+  ].forEach(id=>{if(g(id))g(id).value='';});
+  g('f-dieta').value='';g('f-sexo').value='';g('calc-panel').style.display='none';
+  const sm=g('save-ok');sm.style.display='block';setTimeout(()=>sm.style.display='none',2500);
+}
+
+function saveDB(){
+  try{window.storage&&window.storage.set('avfis-dark',JSON.stringify(db));}catch(e){}
+  try{sessionStorage.setItem('avfis-dark',JSON.stringify(db));}catch(e){}
+}
+async function loadDB(){
+  try{const r=await window.storage.get('avfis-dark');if(r&&r.value){db=JSON.parse(r.value);return;}}catch(e){}
+  try{const s=sessionStorage.getItem('avfis-dark');if(s){db=JSON.parse(s);return;}}catch(e){}
+  db=[{id:1,nome:'João Silva',data:'2026-04-30',aval:'Eugenia',idade:35,sexo:'M',obs:'Avaliação inicial Gympass',
+    peso:84.6,altura:1.8,magra:70.93,mgorda:13.67,gordura:16.16,gideal:0,imc:26.11,rcq:+(90.5/99.5).toFixed(2),
+    'd-sub':26,'d-tri':16,'d-axi':10,'d-sup':23,'d-pei':5,'d-abd':35,'d-cxd':20,'d-bic':null,
+    'p-pes':42.5,'p-omb':119.5,'p-ptr':97,'p-pti':100.5,'p-bdr':31,'p-bdc':35,'p-ber':30,'p-bec':34,
+    'p-afd':29,'p-afe':28,'p-cin':90.5,'p-abd':87,'p-qua':99.5,'p-cxd':58,'p-cxe':59,'p-pad':39,'p-pae':38,
+    dieta:null,kcal:null,prot:null,treinos:null
+  }];
+}
+
+function renderHist(){
+  const el=g('hist-list');
+  if(!db.length){el.innerHTML='<div class="empty">Nenhuma avaliação registrada.</div>';return;}
+  el.innerHTML=[...db].reverse().map(r=>`
+    <div class="hist-item">
+      <div class="hrow">
+        <div>
+          <span style="font-size:14px;font-weight:500;color:#e8eaf0">${r.nome}</span>
+          <span style="font-size:12px;color:#6b7280;margin-left:8px">${fmtD(r.data)}</span>
+          ${r.aval?`<span style="font-size:11px;color:#3d4555;margin-left:6px">Av: ${r.aval}</span>`:''}
+        </div>
+        <button class="btn-ghost" onclick="excluir(${r.id})">Excluir</button>
+      </div>
+      <div class="hstats">
+        ${r.peso?`<div class="hs">${r.peso} kg<span>Peso</span></div>`:''}
+        ${r.gordura?`<div class="hs">${r.gordura}%<span>Gordura</span></div>`:''}
+        ${r.magra?`<div class="hs">${r.magra} kg<span>Massa magra</span></div>`:''}
+        ${r.imc?`<div class="hs">${r.imc} <span class="badge ${badgeIMCv(r.imc)}">${catIMCv(r.imc)}</span><span>IMC</span></div>`:''}
+        ${r.rcq?`<div class="hs">${r.rcq}<span>RCQ</span></div>`:''}
+        ${r['p-cin']?`<div class="hs">${r['p-cin']} cm<span>Cintura</span></div>`:''}
+      </div>
+      ${r.obs?`<div style="font-size:11px;color:#3d4555;margin-top:5px">${r.obs}</div>`:''}
+    </div>`).join('');
+}
+
+function excluir(id){if(!confirm('Excluir?'))return;db=db.filter(r=>r.id!==id);saveDB();renderHist();}
+
+function renderCompSel(){
+  const opts=db.map(r=>`<option value="${r.id}">${r.nome} — ${fmtD(r.data)}</option>`).join('');
+  g('ca').innerHTML=db.length?opts:'<option>Sem dados</option>';
+  g('cb').innerHTML=db.length?opts:'<option>Sem dados</option>';
+  if(db.length>1){g('ca').value=db[0].id;g('cb').value=db[db.length-1].id;}
+}
+
+function renderComp(){
+  const a=db.find(r=>r.id===+g('ca').value),b=db.find(r=>r.id===+g('cb').value);
+  if(!a||!b){g('comp-result').innerHTML='';return;}
+  const rows=[
+    {lbl:'Peso (kg)',ka:a.peso,kb:b.peso,better:'down'},
+    {lbl:'Gordura %',ka:a.gordura,kb:b.gordura,better:'down'},
+    {lbl:'Massa magra (kg)',ka:a.magra,kb:b.magra,better:'up'},
+    {lbl:'Massa gorda (kg)',ka:a.mgorda,kb:b.mgorda,better:'down'},
+    {lbl:'IMC',ka:a.imc,kb:b.imc,better:'down'},
+    {lbl:'RCQ',ka:a.rcq,kb:b.rcq,better:'down'},
+    {lbl:'Cintura (cm)',ka:a['p-cin'],kb:b['p-cin'],better:'down'},
+    {lbl:'Abdômen (cm)',ka:a['p-abd'],kb:b['p-abd'],better:'down'},
+    {lbl:'Quadril (cm)',ka:a['p-qua'],kb:b['p-qua'],better:'none'},
+    {lbl:'Peito relax. (cm)',ka:a['p-ptr'],kb:b['p-ptr'],better:'up'},
+    {lbl:'Braço dir. (cm)',ka:a['p-bdr'],kb:b['p-bdr'],better:'up'},
+    {lbl:'Coxa dir. (cm)',ka:a['p-cxd'],kb:b['p-cxd'],better:'up'},
+    {lbl:'Panturrilha dir. (cm)',ka:a['p-pad'],kb:b['p-pad'],better:'up'},
+    {lbl:'Dobra abdominal (mm)',ka:a['d-abd'],kb:b['d-abd'],better:'down'},
+    {lbl:'Treinos/sem.',ka:a.treinos,kb:b.treinos,better:'up'},
+  ].filter(r=>r.ka!=null&&r.kb!=null);
+  const maxV=Math.max(...rows.map(r=>Math.max(Math.abs(r.ka||0),Math.abs(r.kb||0))),1);
+  const html=rows.map(r=>{
+    const diff=r.kb-r.ka,pct=(Math.abs(diff/(r.ka||1))*100).toFixed(1);
+    let cls='dneu',arrow='→';
+    if(diff!==0){const good=(r.better==='up'&&diff>0)||(r.better==='down'&&diff<0);cls=good?'dpos':'dneg';arrow=diff>0?'▲':'▼';}
+    const wA=(Math.abs(r.ka)/maxV*100).toFixed(1),wB=(Math.abs(r.kb)/maxV*100).toFixed(1);
+    return`<div class="comp-row">
+      <div class="comp-lbl">${r.lbl}</div>
+      <div><div class="bw"><div class="bar" style="width:${wA}%;background:#378ADD60"></div></div><div class="pl"><span style="color:#e8eaf0;font-weight:500">${r.ka}</span><span style="color:#6b7280">${fmtD(a.data)}</span></div></div>
+      <div><div class="bw"><div class="bar" style="width:${wB}%;background:#00c9a7"></div></div><div class="pl"><span style="color:#e8eaf0;font-weight:500">${r.kb}</span><span class="${cls}">${arrow} ${pct}%</span></div></div>
+    </div>`;
+  }).join('');
+  g('comp-result').innerHTML=`<div class="card"><div class="card-title"><span class="ct-dot ct-cyan"></span>${fmtD(a.data)} → ${fmtD(b.data)}</div>${html}</div>`;
+}
+
+function buildTags(){
+  g('evo-tags').innerHTML=METRICS.map(m=>`<span class="tag${m.key===selMet?' sel':''}" onclick="selMetric('${m.key}',this)">${m.label}</span>`).join('');
+}
+function selMetric(k,el){selMet=k;document.querySelectorAll('#evo-tags .tag').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');renderChart();}
+
+function renderChart(){
+  if(!db.length)return;
+  const m=METRICS.find(x=>x.key===selMet);
+  const labels=db.map(r=>fmtD(r.data));
+  const data=db.map(r=>r[selMet]!==undefined?r[selMet]:null);
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(g('evo-chart'),{
+    type:'line',
+    data:{labels,datasets:[{label:m.label,data,borderColor:m.color,backgroundColor:m.color+'22',borderWidth:2,pointRadius:5,pointBackgroundColor:m.color,tension:0.3,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'#2a2f3d'},ticks:{color:'#6b7280',font:{size:11}}},
+        y:{grid:{color:'#2a2f3d'},ticks:{color:'#6b7280',font:{size:11}}}
+      }}
+  });
+}
+
+function renderAnal(){
+  const el=g('evo-anal');
+  if(db.length<2){el.innerHTML='<div class="empty">Registre ao menos 2 avaliações para ver a análise.</div>';return;}
+  const first=db[0],last=db[db.length-1];
+  const checks=[
+    {lbl:'Gordura corporal',val:last.gordura!=null&&first.gordura!=null?last.gordura-first.gordura:null,better:'down',unit:'%',icon:'🔥'},
+    {lbl:'Massa magra',val:last.magra!=null&&first.magra!=null?last.magra-first.magra:null,better:'up',unit:'kg',icon:'💪'},
+    {lbl:'IMC',val:last.imc!=null&&first.imc!=null?last.imc-first.imc:null,better:'down',unit:'',icon:'📊'},
+    {lbl:'Cintura',val:last['p-cin']!=null&&first['p-cin']!=null?last['p-cin']-first['p-cin']:null,better:'down',unit:'cm',icon:'📏'},
+    {lbl:'RCQ',val:last.rcq!=null&&first.rcq!=null?last.rcq-first.rcq:null,better:'down',unit:'',icon:'❤️'},
+    {lbl:'Dobra abdominal',val:last['d-abd']!=null&&first['d-abd']!=null?last['d-abd']-first['d-abd']:null,better:'down',unit:'mm',icon:'🎯'},
+    {lbl:'Treinos por semana',val:last.treinos!=null&&first.treinos!=null?last.treinos-first.treinos:null,better:'up',unit:'',icon:'🏋️'},
+  ].filter(c=>c.val!==null);
+  el.innerHTML=checks.length?checks.map(c=>{
+    const good=(c.better==='up'&&c.val>0)||(c.better==='down'&&c.val<0),neu=c.val===0;
+    const cls=neu?'eneu':good?'epos':'eneg';
+    const col=neu?'#6b7280':good?'#00c9a7':'#f97316';
+    const sign=c.val>0?'+':'';
+    const sub=neu?'Sem alteração':good?'Evolução positiva':'Atenção — revisar estratégia';
+    return`<div class="evo-card"><div class="ei ${cls}" style="font-size:14px">${c.icon}</div><div><div class="etitle">${c.lbl} — <span style="color:${col}">${sign}${c.val.toFixed(2)} ${c.unit}</span></div><div class="esub">${sub}</div></div></div>`;
+  }).join(''):'<div class="empty">Sem dados suficientes.</div>';
+}
+
+function renderEvo(){buildTags();if(db.length)renderChart();else g('evo-chart').closest('.card').innerHTML='<div class="empty">Registre avaliações para ver o gráfico.</div>';renderAnal();}
+
+g('f-data').value=new Date().toISOString().slice(0,10);
+loadDB().then(()=>{});
+</script>
